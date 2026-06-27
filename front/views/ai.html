@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {{> head}}
+    <title>AP Chess - Play vs AI</title>
+</head>
+<body style="padding: 20px 0;">
+
+    <div class="game-container">
+        
+        <!-- Left Side: Board & Dashboard -->
+        <div>
+            <!-- Dashboard Top Bar -->
+            <div class="dashboard-header">
+                <div class="game-status-badge" id="aiStatus">
+                    <span style="display:inline-block; width:10px; height:10px; border-radius:50%; background:var(--accent-gold); box-shadow: 0 0 8px var(--accent-gold);"></span>
+                    <span id="statusText">Your Move</span>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                    <div class="game-info-badge" id="difficultyBadge">Difficulty: Easy</div>
+                    <div class="game-info-badge" id="aiColorBadge">Color: White</div>
+                </div>
+            </div>
+
+            <!-- Chessboard -->
+            <div id="aiBoard" style="width: 100%;"></div>
+
+            <!-- Status and PGN display panels -->
+            <div id="status" style="margin-top: 16px; font-weight: 500; color: #fff; background: rgba(0,0,0,0.15); border: 1px solid rgba(255,255,255,0.05);">Turn: White</div>
+            <div id="pgn" class="pgn-card"></div>
+        </div>
+
+        <!-- Right Side: Sidebar (Game Setup, Game controls) -->
+        <div class="sidebar-panel glass-panel">
+            
+            <h2 style="font-family: 'Space Grotesk', sans-serif; font-size: 1.5rem; margin-bottom: 20px; color: #fff; font-weight: 700;">VS AI Mode</h2>
+            
+            <!-- Difficulty Selector -->
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; font-size: 0.8rem; font-weight: 600; color: var(--accent-gold); text-transform: uppercase; margin-bottom: 8px; letter-spacing: 0.05em;">Engine Level</label>
+                <div style="position: relative;">
+                    <button id="aiLevelSelectBtn" class="custom-input" style="text-align: left; cursor: pointer; display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; font-size: 0.95rem; background: rgba(255,255,255,0.04);">
+                        <span id="selectedDiffText">Easy Mode (Random)</span>
+                        <span style="border: solid var(--text-secondary); border-width: 0 2px 2px 0; display: inline-block; padding: 3px; transform: rotate(45deg); margin-top: -3px;"></span>
+                    </button>
+                    <div id="aiLevelDropdown" class="dropdown-menu" style="display: none; position: absolute; left: 0; width: 100%; top: 110%; z-index: 100;">
+                        <div class="dropdown-item" data-diff="easy">Easy Mode (Random moves)</div>
+                        <div class="dropdown-item" data-diff="intermediate">Intermediate Mode (Positional lookahead)</div>
+                        <div class="dropdown-item" data-diff="hard">Hard Mode (Deep tactical search)</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Color Selector -->
+            <div style="margin-bottom: 24px;">
+                <label style="display: block; font-size: 0.8rem; font-weight: 600; color: var(--accent-gold); text-transform: uppercase; margin-bottom: 8px; letter-spacing: 0.05em;">Play As</label>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                    <button id="playWhiteBtn" class="btn-primary" style="padding: 10px; font-size: 0.95rem;">White</button>
+                    <button id="playBlackBtn" class="btn-secondary" style="padding: 10px; font-size: 0.95rem;">Black</button>
+                </div>
+            </div>
+
+            <hr style="border: none; border-top: 1px solid var(--panel-border); margin-bottom: 24px;">
+
+            <!-- Board Controls -->
+            <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                    <button id="ai-undo" class="btn-secondary" style="padding: 10px; font-size: 0.95rem; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                        <span>Undo Move</span>
+                    </button>
+                    <button id="ai-flip" class="btn-secondary" style="padding: 10px; font-size: 0.95rem;">Flip Board</button>
+                </div>
+                <button id="ai-restart" class="btn-secondary btn-danger" style="padding: 10px; font-size: 0.95rem; width: 100%;">Restart Match</button>
+                <button id="lobbyBtn" class="btn-secondary" style="padding: 10px; font-size: 0.95rem; width: 100%;">Exit to Lobby</button>
+            </div>
+            
+        </div>
+
+    </div>
+
+    <!-- Piece Promotion Dialog -->
+    <div id="promotion-modal" class="promotion-modal">
+        <div class="promotion-box">
+            <h3 style="color:#fff; margin-bottom:16px; font-family:'Space Grotesk',sans-serif;">Pawn Promotion</h3>
+            <p style="color:var(--text-secondary); font-size:0.9rem; margin-bottom:20px;">Select which piece to promote your pawn to:</p>
+            <div class="promotion-options">
+                <div class="promotion-option" data-piece="q"><img src="" id="promo-q" alt="Queen"></div>
+                <div class="promotion-option" data-piece="r"><img src="" id="promo-r" alt="Rook"></div>
+                <div class="promotion-option" data-piece="b"><img src="" id="promo-b" alt="Bishop"></div>
+                <div class="promotion-option" data-piece="n"><img src="" id="promo-n" alt="Knight"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/public/js/ai.js"></script>
+
+</body>
+</html>

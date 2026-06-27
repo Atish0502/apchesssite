@@ -1,20 +1,109 @@
-<html>
-    <head>
-        {{> head}}
-    </head>
-    <body>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {{> head}}
+    <title>AP Chess - Room Match</title>
+</head>
+<body style="padding: 20px 0;">
 
-        <div id="myBoard" style="width: 700px"></div>
-        <label>Status:</label>
-        <div id="status"></div>
-        <label>PGN:</label>
-        <div id="pgn"></div>
+    <div class="game-container">
+        
+        <!-- Left Side: Board & Dashboard -->
+        <div>
+            <!-- Dashboard Top Bar -->
+            <div class="dashboard-header">
+                <div class="game-status-badge" id="gameStatus">
+                    <span style="display:inline-block; width:10px; height:10px; border-radius:50%; background:var(--accent-gold); box-shadow: 0 0 8px var(--accent-gold);"></span>
+                    <span>Waiting for opponent...</span>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                    <div class="game-info-badge" id="spectatorBadge">Spectators: 0</div>
+                    <div class="game-info-badge" id="roleBadge">Role: White</div>
+                </div>
+            </div>
 
-        <script>
-            let playerColor = '{{color}}';
-            console.log('Playing as ' + playerColor);
-        </script>
-        <script src="/public/js/index.js"></script>
+            <!-- Timers Grid -->
+            <div class="timers-wrapper">
+                <!-- White Player Timer -->
+                <div class="timer-card white-player" id="whiteTimerCard">
+                    <div class="timer-name">White Player</div>
+                    <div class="timer-digits" id="white-timer">10:00</div>
+                    <div style="font-size:0.75rem; margin-top:4px; color:var(--text-secondary);" id="whiteConnState">Connected</div>
+                </div>
+                <!-- Black Player Timer -->
+                <div class="timer-card black-player" id="blackTimerCard">
+                    <div class="timer-name">Black Player</div>
+                    <div class="timer-digits" id="black-timer">10:00</div>
+                    <div style="font-size:0.75rem; margin-top:4px; color:var(--text-secondary);" id="blackConnState">Disconnected</div>
+                </div>
+            </div>
 
-    </body>
+            <!-- Chessboard -->
+            <div id="myBoard" style="width: 100%;"></div>
+
+            <!-- Status and PGN display panels -->
+            <div id="status" style="margin-top: 16px; font-weight: 500; color: #fff; background: rgba(0,0,0,0.15); border: 1px solid rgba(255,255,255,0.05);">Turn: White</div>
+            <div id="pgn" class="pgn-card"></div>
+        </div>
+
+        <!-- Right Side: Sidebar (Share, Controls, Chat) -->
+        <div class="sidebar-panel glass-panel">
+            <!-- Share Code Box -->
+            <div class="share-card">
+                <div class="share-header">Invite a Friend</div>
+                <div class="share-body">
+                    <input type="text" id="inviteLinkInput" class="custom-input" style="font-size: 0.85rem; padding: 10px;" readonly>
+                    <button id="copyInviteBtn" class="btn-primary" style="padding: 10px 14px; font-size: 0.85rem;">Copy</button>
+                </div>
+                <div style="font-size: 0.75rem; color: var(--text-secondary); text-align: center;">Share this link to let your friend join as Black.</div>
+            </div>
+
+            <!-- Control Buttons -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px;">
+                <button id="resignBtn" class="btn-secondary btn-danger" style="padding: 10px; font-size: 0.95rem;">Resign</button>
+                <button id="lobbyBtn" class="btn-secondary" style="padding: 10px; font-size: 0.95rem;">Lobby</button>
+            </div>
+
+            <!-- Chat Title -->
+            <div style="font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 8px; letter-spacing: 0.05em;">Lobby Chat</div>
+
+            <!-- Chat Messages Area -->
+            <div id="chat-messages" class="chat-box"></div>
+
+            <!-- Chat Inputs -->
+            <div class="chat-input-wrapper">
+                <input id="chat-input" type="text" class="custom-input" placeholder="Type message..." maxlength="100">
+                <button id="chat-send" class="btn-primary">Send</button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Forfeit/Reconnection Countdown Overlay -->
+    <div id="disconnectOverlay" class="overlay-modal">
+        <div class="overlay-content">
+            <div class="overlay-title">Connection Lost</div>
+            <div class="overlay-text" id="disconnectOverlayText">Opponent has disconnected. Waiting for reconnection...</div>
+            <div class="countdown-digits" id="disconnectCountdown">30</div>
+            <div style="font-size: 0.85rem; color: var(--text-secondary);">If they do not return, you win by forfeit.</div>
+        </div>
+    </div>
+
+    <!-- Piece Promotion Dialog -->
+    <div id="promotion-modal" class="promotion-modal">
+        <div class="promotion-box">
+            <h3 style="color:#fff; margin-bottom:16px; font-family:'Space Grotesk',sans-serif;">Pawn Promotion</h3>
+            <p style="color:var(--text-secondary); font-size:0.9rem; margin-bottom:20px;">Select which piece to promote your pawn to:</p>
+            <div class="promotion-options">
+                <div class="promotion-option" data-piece="q"><img src="" id="promo-q" alt="Queen"></div>
+                <div class="promotion-option" data-piece="r"><img src="" id="promo-r" alt="Rook"></div>
+                <div class="promotion-option" data-piece="b"><img src="" id="promo-b" alt="Bishop"></div>
+                <div class="promotion-option" data-piece="n"><img src="" id="promo-n" alt="Knight"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/public/js/index.js"></script>
+
+</body>
 </html>

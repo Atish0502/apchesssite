@@ -15,7 +15,8 @@ const app = express(),
 
 server.listen(config.port);
 
-games = {};
+// Make games global so routes can access it
+global.games = {};
 
 myIo(io);
 

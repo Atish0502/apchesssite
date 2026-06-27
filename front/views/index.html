@@ -1,26 +1,152 @@
-<html>
-    <head>
-        {{> head}}
-    </head>
-    <body>
-        <h2>Game code</h2>
-        <input type="text" id="codeInput">
-        <button id="createGame">Create game</button>
-        <button id="joinGame">Join game</button>
-        <div style="color: red" id="errorMessage"></div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {{> head}}
+    <title>AP Chess - Play Online or vs AI</title>
+</head>
+<body style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 20px;">
 
-        <script>
-            $('#createGame').on('click', function() {
-                window.location.replace('/white?code=' + $('#codeInput').val());
-            });
-            $('#joinGame').on('click', function() {
-                window.location.replace('/black?code=' + $('#codeInput').val());
-            });
+    <!-- Brand Header -->
+    <div style="text-align: center; margin-bottom: 40px;">
+        <h1 class="landing-title">Welcome to World of Chess</h1>
+        <p style="font-size: 1.5rem; font-family:'Segoe Script', cursive; color: var(--accent-gold); margin-top: 10px; text-shadow: 0 0 12px rgba(244,63,94,0.15); font-weight: bold;">by Atish Paul</p>
+        <p class="landing-subtitle" style="margin-top: 10px;">An elegant multiplayer chess game with real-time chat and smart AI opponents</p>
+    </div>
 
-            var urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.get('error') == 'invalidCode') {
-                $('#errorMessage').text('Invalid invite code');
+    <!-- Main Selection Panels -->
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 32px; width: 100%; max-width: 900px;" id="main-panels">
+        
+        <!-- Panel 1: Play vs AI -->
+        <div class="glass-panel" style="display: flex; flex-direction: column; justify-content: space-between; height: 350px;">
+            <div>
+                <h2 style="font-family: 'Space Grotesk', sans-serif; font-size: 1.8rem; margin-bottom: 12px; color: #fff; font-weight: 700;">Battle the AI</h2>
+                <p style="color: var(--text-secondary); font-size: 1rem; line-height: 1.5; margin-bottom: 24px;">Test your tactical prowess against our built-in engine. Choose from three difficulty levels designed for all stages of player progression.</p>
+                
+                <label style="display: block; font-size: 0.85rem; font-weight: 600; color: var(--accent-gold); text-transform: uppercase; margin-bottom: 8px; letter-spacing: 0.05em;">Select Difficulty</label>
+                <div style="position: relative;">
+                    <button id="aiLevelSelectBtn" class="custom-input" style="text-align: left; cursor: pointer; display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.04);">
+                        <span id="selectedDiffText">Easy Mode (Random)</span>
+                        <span style="border: solid var(--text-secondary); border-width: 0 2px 2px 0; display: inline-block; padding: 3px; transform: rotate(45deg); margin-top: -3px;"></span>
+                    </button>
+                    <div id="aiLevelDropdown" class="dropdown-menu" style="display: none; position: absolute; left: 0; width: 100%; top: 110%; z-index: 100;">
+                        <div class="dropdown-item" data-diff="easy">Easy Mode (Random moves)</div>
+                        <div class="dropdown-item" data-diff="intermediate">Intermediate Mode (Positional lookahead)</div>
+                        <div class="dropdown-item" data-diff="hard">Hard Mode (Deep tactical search)</div>
+                    </div>
+                </div>
+            </div>
+            
+            <button id="startAiBtn" class="btn-primary" style="width: 100%; margin-top: 16px;">
+                Play Against AI
+            </button>
+        </div>
+
+        <!-- Panel 2: Play Multiplayer -->
+        <div class="glass-panel" style="display: flex; flex-direction: column; justify-content: space-between; height: 350px;">
+            <div>
+                <h2 style="font-family: 'Space Grotesk', sans-serif; font-size: 1.8rem; margin-bottom: 12px; color: #fff; font-weight: 700;">Play with Friend</h2>
+                <p style="color: var(--text-secondary); font-size: 1rem; line-height: 1.5; margin-bottom: 20px;">Play a real-time match against anyone. Enter a room code to join an ongoing lobby, or start a new game instantly.</p>
+                
+                <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 12px;">
+                    <div style="position: relative;">
+                        <input type="text" id="codeInput" class="custom-input" placeholder="Enter Room Code (e.g. CX4A19)" style="padding-right: 120px; text-transform: uppercase;">
+                        <button id="joinGameBtn" class="btn-primary" style="position: absolute; right: 6px; top: 6px; padding: 8px 18px; font-size: 0.95rem; border-radius: 8px; height: calc(100% - 12px);">Join</button>
+                    </div>
+                    <div style="text-align: center; color: var(--text-secondary); font-size: 0.9rem; margin: 4px 0;">— OR —</div>
+                </div>
+            </div>
+            
+            <button id="createGameBtn" class="btn-secondary" style="width: 100%;">
+                Create New Room
+            </button>
+        </div>
+    </div>
+
+    <!-- Error message display -->
+    <div id="errorMessage" style="color: var(--danger-red); font-weight: 500; font-size: 0.95rem; margin-top: 24px; min-height: 1.5em; text-align: center;"></div>
+
+    <!-- Footer -->
+    <div style="margin-top: 60px; text-align: center; color: var(--text-secondary); font-size: 0.85rem; letter-spacing: 0.05em;">
+        <span style="color: var(--accent-gold); font-weight: 600;">AP CHESS</span> &copy; 2026. MADE WITH LOVE.
+    </div>
+
+    <style>
+        @media (max-width: 768px) {
+            #main-panels {
+                grid-template-columns: 1fr !important;
+                gap: 20px !important;
+                max-width: 450px !important;
             }
-        </script>
-    </body>
+            .glass-panel {
+                height: auto !important;
+                min-height: 320px;
+            }
+        }
+    </style>
+
+    <script>
+        $(document).ready(function() {
+            let selectedDifficulty = 'easy';
+
+            // AI Dropdown controls
+            $('#aiLevelSelectBtn').on('click', function(e) {
+                e.stopPropagation();
+                $('#aiLevelDropdown').fadeToggle(150);
+            });
+
+            $(document).on('click', function() {
+                $('#aiLevelDropdown').fadeOut(100);
+            });
+
+            $('.dropdown-item').on('click', function() {
+                const diff = $(this).data('diff');
+                selectedDifficulty = diff;
+                $('#selectedDiffText').text($(this).text());
+                $('#aiLevelDropdown').fadeOut(100);
+            });
+
+            // Start AI Button
+            $('#startAiBtn').on('click', function() {
+                window.location.replace(`/ai?difficulty=${selectedDifficulty}`);
+            });
+
+            // Create Room (uses input code if present, otherwise generates random 6 char code)
+            $('#createGameBtn').on('click', function() {
+                let code = $('#codeInput').val().trim().toUpperCase();
+                if (code.length === 0) {
+                    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+                    for (let i = 0; i < 6; i++) {
+                        code += chars.charAt(Math.floor(Math.random() * chars.length));
+                    }
+                }
+                window.location.replace(`/game?code=${code}`);
+            });
+
+            // Join Room
+            function performJoin() {
+                const code = $('#codeInput').val().trim().toUpperCase();
+                if (code.length === 0) {
+                    $('#errorMessage').text('Please enter a room code first.');
+                    setTimeout(() => $('#errorMessage').text(''), 4000);
+                    return;
+                }
+                window.location.replace(`/game?code=${code}`);
+            }
+
+            $('#joinGameBtn').on('click', performJoin);
+            $('#codeInput').on('keypress', function(e) {
+                if (e.which === 13) {
+                    performJoin();
+                }
+            });
+
+            // URL param errors
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('error') === 'invalidCode') {
+                $('#errorMessage').text('The game lobby was not found or is closed.');
+                setTimeout(() => $('#errorMessage').text(''), 6000);
+            }
+        });
+    </script>
+</body>
 </html>
